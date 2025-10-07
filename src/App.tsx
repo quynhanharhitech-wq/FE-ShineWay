@@ -1,7 +1,7 @@
 import { Button, Card } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AppLayout from "./ui/AppLayout";
-import Dashboard from "./pages/Dashboard";
+import AppLayout from "./ui/AppLayout.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 
 function App() {
   return (

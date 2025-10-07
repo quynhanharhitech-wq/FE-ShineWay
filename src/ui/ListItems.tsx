@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Button } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 
-function ListItem({ title, description, time, onClick }) {
+function ListItems({ title, description, time, onClick }) {
   return (
     <Card
       className="mb-4 shadow-md hover:shadow-lg transition-shadow"
@@ -26,4 +26,4 @@ function ListItem({ title, description, time, onClick }) {
   );
 }
 
-export default ListItem;
+export default ListItems;
