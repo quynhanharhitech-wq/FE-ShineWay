@@ -2,6 +2,8 @@ import { Button, Card } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import EmployeeList from "./modules/employee/pages/EmployeeList.tsx";
+import RoleList from "./modules/role/pages/RoleList.tsx";
 
 function App() {
   return (
@@ -10,6 +12,8 @@ function App() {
         <Routes>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="employees" element={<EmployeeList />} />
+            <Route path="employees/roles" element={<RoleList />} />
           </Route>
 
           <Route
