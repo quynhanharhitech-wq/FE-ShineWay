@@ -1,16 +1,18 @@
-import { Layout, Input, Avatar, Dropdown, Badge, Button, Space } from "antd";
+import { Layout, Avatar, Dropdown, Badge, Button, Space } from "antd"; // Xóa Input, DownOutlined, SearchOutlined
 import {
   BellOutlined,
   QuestionCircleOutlined,
   MenuOutlined,
-  DownOutlined,
-  SearchOutlined,
 } from "@ant-design/icons";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./Sidebar.tsx";
+import Menu from "../components/Menu.tsx"; // Import Menu chính từ code trước (menu top-level như "Nhân sự", "Kho")
+import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice.ts";
+import { persistor } from "../store/store.ts";
 
-const { Header, Content } = Layout;
+const { Header, Content, Sider } = Layout; // Thêm Sider
 
 const userMenuItems = [
   { key: "profile", label: "Profile" },
@@ -19,18 +21,31 @@ const userMenuItems = [
 ];
 
 function AppLayout() {
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation(); // Thêm để kiểm tra path
 
-  const onUserSelect = ({ key }) => {
-    console.log("Chọn User:", key);
+  const onUserClick = ({ key }: any) => {
+    if (key === "logout") {
+      dispatch(logout());
+      persistor.purge();
+    } else {
+      console.log("Chọn:", key);
+    }
   };
+
+  const isHome = location.pathname === "/"; // Kiểm tra nếu ở home
 
   return (
     <Layout className="min-h-screen">
-      <Header className="bg-white h-[136px] shadow-sm flex items-center justify-between px-6 py-3">
+      <Header className="bg-white h-[136px] shadow-sm flex items-center justify-between px-6 py-3 fixed w-full z-10">
         <Space size="middle" className="flex items-center">
           <div className="flex items-center">
-            <h1 className="text-4xl font-bold text-[#0088FF] mr-4">ShineWay</h1>
+            <Link to="/">
+              <h1 className="text-4xl font-bold text-[#0088FF] mr-4">
+                ShineWay
+              </h1>
+            </Link>
           </div>
         </Space>
 
@@ -38,7 +53,7 @@ function AppLayout() {
           <Dropdown
             menu={{
               items: userMenuItems,
-              onSelect: onUserSelect,
+              onClick: onUserClick,
             }}
             placement="bottomRight"
             trigger={["click"]}
@@ -74,16 +89,34 @@ function AppLayout() {
             icon={<MenuOutlined className="text-xl" />}
             onClick={() => setCollapsed(!collapsed)}
             className="text-gray-700"
+            disabled={isHome} // Disable toggle ở home nếu không có sidebar
           />
         </Space>
       </Header>
-      <Layout className="grid grid-cols-[8rem_1fr] md:grid-cols-[306px_1fr] h-[calc(100vh-64px)]">
-        <Sidebar className="row-span-full" />
-        <main className="overflow-y-auto p-16 pb-20">
-          <Content className="max-w-screen mx-auto">
-            <Outlet />
-          </Content>
-        </main>
+      <Layout className="pt-[136px]">
+        {!isHome && ( // Chỉ render Sider khi KHÔNG ở home (fix duplicate)
+          <Sider
+            key="main-sider" // Thêm key unique để React re-render đúng
+            collapsible
+            collapsed={collapsed}
+            onCollapse={setCollapsed}
+            width={306}
+            collapsedWidth={80}
+            className="h-[calc(100vh-136px)] bg-white fixed left-0 z-0"
+            theme="light"
+          >
+            <Sidebar />
+          </Sider>
+        )}
+        <Content
+          className={`overflow-y-auto p-6 bg-gray-50 h-[calc(100vh-136px)] ${
+            isHome ? "ml-0" : "ml-[80px] md:ml-[306px]"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto">
+            <Outlet /> {/* Outlet render HomePage hoặc sub-page */}
+          </div>
+        </Content>
       </Layout>
     </Layout>
   );

@@ -1,29 +1,38 @@
 import React from "react";
-import { Menu } from "antd";
-import { TeamOutlined, SettingOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store.ts";
 
 const Sidebar: React.FC = () => {
+  const permissions = useSelector((state: RootState) => state.auth.permissions);
+  const location = useLocation();
+
+  if (!permissions) return null;
+
+  const currentMenu = permissions.menus.find((menu) =>
+    location.pathname.startsWith(menu.url)
+  );
+
+  if (!currentMenu) return null; // Không render sidebar nếu không ở menu chính
+
   return (
-    <aside className="bg-gray-50 row-span-full flex flex-col gap-8 border-r border-gray-200 p-8 md:min-w-72 xl:max-w-none">
-      {/* Menu */}
-      <Menu
-        mode="inline"
-        defaultSelectedKeys={["1"]}
-        style={{ border: "none", background: "transparent" }}
-        items={[
-          {
-            key: "1",
-            icon: <TeamOutlined />,
-            label: <Link to="/employees">Thông tin nhân viên</Link>,
-          },
-          {
-            key: "2",
-            icon: <SettingOutlined />,
-            label: <Link to="/employees/roles">Chức vụ</Link>, // Thêm route cho chức vụ, tùy chỉnh theo nhu cầu
-          },
-        ]}
-      />
+    <aside className="h-full bg-white p-4 border-r border-gray-200">
+      <ul className="space-y-2">
+        {currentMenu.subItems.map((sub) => (
+          <li key={sub.name}>
+            <Link
+              to={sub.url}
+              className={`block p-2 rounded ${
+                location.pathname === sub.url
+                  ? "bg-blue-100 text-blue-500 font-bold"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {sub.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </aside>
   );
 };

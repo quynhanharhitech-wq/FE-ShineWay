@@ -1,30 +1,32 @@
-import { Button, Card } from "antd";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AppLayout from "./ui/AppLayout.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-import EmployeeList from "./modules/employee/pages/EmployeeList.tsx";
-import RoleList from "./modules/role/pages/RoleList.tsx";
+import React from "react";
+import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import store, { persistor } from "./store/store.ts";
+import DynamicRoutes from "./router/DynamicRoutes.tsx";
+import Menu from "./components/Menu.tsx";
+
+function AppContent() {
+  const location = useLocation();
+
+  return (
+    <div className="app flex flex-col min-h-screen">
+      <div className="content flex-1">
+        <DynamicRoutes />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
-    <div className="min-h-screen font-sans text-2xl text-gray-700">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="employees" element={<EmployeeList />} />
-            <Route path="employees/roles" element={<RoleList />} />
-          </Route>
-
-          <Route
-            path="*"
-            element={
-              <div className="text-center p-8">404 - Không tìm thấy trang!</div>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Router>
+          <AppContent />
+        </Router>
+      </PersistGate>
+    </Provider>
   );
 }
 
