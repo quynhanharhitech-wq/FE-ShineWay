@@ -29,6 +29,12 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         .toString()
         .padStart(3, "0")}`,
       salary: values.salary,
+      status: "active", 
+      recentActivities: [],
+      dateOfBirth: "",
+      gender: "Nam",      
+      address: "",
+      phone: "",
     };
     console.log("Data Employêe:", newEmployee);
     onAdd(newEmployee);
