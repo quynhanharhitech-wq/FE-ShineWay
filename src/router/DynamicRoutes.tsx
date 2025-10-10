@@ -7,12 +7,13 @@ import EmployeeInfoPage from "../modules/employees/pages/EmployeeList.tsx";
 import PositionPage from "../modules/roles/pages/RoleList.tsx";
 import AppLayout from "../ui/AppLayout.tsx";
 import Menu from "../components/Menu.tsx";
+import Dashboard from "../pages/Dashboard.tsx";
 // import CategoryPage from '../pages/CategoryPage';
 // import ProductPage from '../pages/ProductPage';
 
 const HomePage: React.FC = () => (
   <div>
-    <Menu />
+    <Dashboard />
   </div>
 );
 
