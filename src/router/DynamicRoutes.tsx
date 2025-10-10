@@ -1,20 +1,26 @@
-import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../store/store.ts';
-import Login from '../pages/Login.tsx';
-import EmployeeInfoPage from '../modules/employees/pages/EmployeeList.tsx';
-import PositionPage from '../modules/roles/pages/RoleList.tsx';
-import AppLayout from '../ui/AppLayout.tsx';
-import Menu from '../components/Menu.tsx';
-import EmployeeDetail from '../modules/employees/pages/EmployeeDetail.tsx';
+
+import React from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store.ts";
+import Login from "../pages/Login.tsx";
+import EmployeeInfoPage from "../modules/employees/pages/EmployeeList.tsx";
+import PositionPage from "../modules/roles/pages/RoleList.tsx";
+import AppLayout from "../ui/AppLayout.tsx";
+import Menu from "../components/Menu.tsx";
+import Dashboard from "../pages/Dashboard.tsx";
+import EmployeeDetail from "../modules/employees/pages/EmployeeDetail.tsx";
+
 // import CategoryPage from '../pages/CategoryPage';
 // import ProductPage from '../pages/ProductPage';
 
 const HomePage: React.FC = () => (
-   <div>
-      <Menu />
-   </div>
+
+  <div>
+    <Dashboard />
+  </div>
+
+
 );
 
 const pageMap: { [key: string]: React.FC } = {
