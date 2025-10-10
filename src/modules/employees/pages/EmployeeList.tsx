@@ -5,7 +5,6 @@ import Header from "../components/Header.tsx";
 export default function EmployeeList() {
   return (
     <div>
-      EmployeeList
       <EmployeeCard />
     </div>
   );

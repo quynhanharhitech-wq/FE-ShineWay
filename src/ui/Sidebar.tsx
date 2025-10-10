@@ -23,7 +23,7 @@ const Sidebar: React.FC = () => {
             <Link
               to={sub.url}
               className={`block p-2 rounded ${
-                location.pathname === sub.url
+                location.pathname.startsWith(sub.url)
                   ? "bg-blue-100 text-blue-500 font-bold"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
