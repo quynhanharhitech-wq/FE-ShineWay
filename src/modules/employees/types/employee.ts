@@ -16,6 +16,16 @@ export interface Employee {
   currentShift?: CurrentShift;
 }
 
+export interface ExtendedEmployee extends Employee {
+   recentActivities: RecentActivity[];
+   dateOfBirth: string;
+   gender: 'Nam' | 'Nữ';
+   address: string;
+   phone: string;
+   currentShift?: CurrentShift;
+}
+
+
 export interface RecentActivity {
   date: string;
   time: string;
