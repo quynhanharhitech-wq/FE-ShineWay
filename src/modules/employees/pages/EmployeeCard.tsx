@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store.ts";
 import { fakeEmployees } from "../data/employee.ts";
-import {Table, Button, Pagination, Input, Space } from "antd";
+import { Table, Button, Pagination, Input, Space, Select } from "antd";
 import type { ColumnsType } from "antd/es/table/InternalTable.js";
 import type { Employee } from "../types/employee.ts";
 import { Eye, Pencil, Trash2 } from "lucide-react";
@@ -10,6 +10,8 @@ import { useEmployeeActions } from "../hooks/useEmployee.ts";
 import AddEmployeeModal from "../components/AddEmployeeModal.tsx";
 
 const { Search } = Input;
+const { Option } = Select;
+
 // Định nghĩa kiểu cho subItems trong permissions
 interface SubItem {
   url: string;
@@ -30,40 +32,34 @@ const EmployeeCard: React.FC = () => {
   const currentPerm = permissions?.menus
     .flatMap((m: MenuItem) => m.subItems)
     .find((sub: SubItem) => sub.url === "/nhan-su/thong-tin-nhan-vien");
-  console.log("EmployeeCard - Current Permissions:", currentPerm); // Debug để kiểm tra
 
   const [employees, setEmployees] = useState<Employee[]>(fakeEmployees);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { handleEdit, handleDelete, handleView } = useEmployeeActions();
 
   const [searchText, setSearchText] = useState("");
+  const [filterDepartment, setFilterDepartment] = useState<string>("all");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter((emp) =>
-      emp.fullname.toLowerCase().includes(searchText.toLowerCase())
-    );
-  }, [employees, searchText]);
+    return employees.filter((emp) => {
+      const matchName = emp.fullname.toLowerCase().includes(searchText.toLowerCase());
+      const matchDept =
+        filterDepartment === "all" ? true : emp.department === filterDepartment;
+      return matchName && matchDept;
+    });
+  }, [employees, searchText, filterDepartment]);
 
   const startIndex = (currentPage - 1) * pageSize;
-  const paginatedData = filteredEmployees.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+  const paginatedData = filteredEmployees.slice(startIndex, startIndex + pageSize);
 
   const handleAddEmployee = (newEmployee: Employee) => {
     setEmployees([...employees, newEmployee]);
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+  const handleCancel = () => setIsModalVisible(false);
 
   const columns: ColumnsType<Employee> = [
     {
@@ -81,7 +77,8 @@ const EmployeeCard: React.FC = () => {
       title: "Chức vụ",
       dataIndex: "department",
       key: "department",
-      render: (text: string) => (text === "chef" ? "Chef" : "Waiter"),
+      render: (text: string) =>
+        text === "chef" ? "Chef" : text === "waiter" ? "Waiter" : "Manager",
     },
     {
       title: "Mã chức vụ",
@@ -141,12 +138,35 @@ const EmployeeCard: React.FC = () => {
 
   return (
     <div>
-      <Space style={{ marginBottom: 16, width: "100%", justifyContent: "space-between" }}>
-        {currentPerm?.permissions.add && (
-          <Button type="primary" onClick={() => setIsModalVisible(true)}>
-            Thêm mới
-          </Button>
-        )}
+      <Space
+        style={{
+          marginBottom: 16,
+          width: "100%",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+        }}
+      >
+        <Space>
+          {currentPerm?.permissions.add && (
+            <Button type="primary" onClick={() => setIsModalVisible(true)}>
+              Thêm mới
+            </Button>
+          )}
+
+          <Select
+            value={filterDepartment}
+            style={{ width: 180 }}
+            onChange={(value) => {
+              setFilterDepartment(value);
+              setCurrentPage(1);
+            }}
+          >
+            <Option value="all">Tất cả chức vụ</Option>
+            <Option value="chef">Chef</Option>
+            <Option value="waiter">Waiter</Option>
+            <Option value="manager">Manager</Option>
+          </Select>
+        </Space>
 
         <Search
           placeholder="Tìm kiếm theo tên nhân viên"
