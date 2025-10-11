@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store.ts";
 import { fakeEmployees } from "../data/employee.ts";
-import { Table, Button } from "antd";
+import {Table, Button, Pagination, Input, Space } from "antd";
 import type { ColumnsType } from "antd/es/table/InternalTable.js";
 import type { Employee } from "../types/employee.ts";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useEmployeeActions } from "../hooks/useEmployee.ts";
 import AddEmployeeModal from "../components/AddEmployeeModal.tsx";
 
+const { Search } = Input;
 // Định nghĩa kiểu cho subItems trong permissions
 interface SubItem {
   url: string;
@@ -34,6 +35,23 @@ const EmployeeCard: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>(fakeEmployees);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { handleEdit, handleDelete, handleView } = useEmployeeActions();
+
+  const [searchText, setSearchText] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const filteredEmployees = useMemo(() => {
+    return employees.filter((emp) =>
+      emp.fullname.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }, [employees, searchText]);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = filteredEmployees.slice(
+    startIndex,
+    startIndex + pageSize
+  );
 
   const handleAddEmployee = (newEmployee: Employee) => {
     setEmployees([...employees, newEmployee]);
@@ -123,15 +141,29 @@ const EmployeeCard: React.FC = () => {
 
   return (
     <div>
-      {currentPerm?.permissions.add && (
-        <Button type="primary" onClick={showModal} style={{ marginBottom: 16 }}>
-          Thêm mới
-        </Button>
-      )}
+      <Space style={{ marginBottom: 16, width: "100%", justifyContent: "space-between" }}>
+        {currentPerm?.permissions.add && (
+          <Button type="primary" onClick={() => setIsModalVisible(true)}>
+            Thêm mới
+          </Button>
+        )}
+
+        <Search
+          placeholder="Tìm kiếm theo tên nhân viên"
+          allowClear
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setCurrentPage(1);
+          }}
+          style={{ maxWidth: 300 }}
+        />
+      </Space>
+
       <Table
         columns={columns}
-        dataSource={employees} // Sử dụng state employees thay vì fakeEmployees
+        dataSource={paginatedData}
         rowKey="id"
+        pagination={false}
         components={{
           header: {
             cell: (props: any) => (
@@ -142,6 +174,20 @@ const EmployeeCard: React.FC = () => {
           },
         }}
       />
+
+      <div className="flex justify-end mt-4">
+        <Pagination
+          current={currentPage}
+          total={filteredEmployees.length}
+          pageSize={pageSize}
+          showSizeChanger
+          onChange={(page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          }}
+        />
+      </div>
+
       <AddEmployeeModal
         visible={isModalVisible}
         onCancel={handleCancel}
