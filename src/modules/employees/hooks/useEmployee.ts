@@ -1,11 +1,15 @@
 import { useCallback } from "react";
 import type { Employee } from "../types/employee.ts";
 
-export const useEmployeeActions = () => {
+export const useEmployeeActions = (
+    setEditingEmployee: (employee: Employee | null) => void,
+    setIsModalVisible: (visible: boolean) => void
+  ) => {
   const handleEdit = useCallback((record: Employee) => {
     console.log("Sửa:", record);
-    // Thêm logic sửa tại đây (ví dụ: mở modal, điều hướng đến trang sửa)
-  }, []);
+    setEditingEmployee(record);
+    setIsModalVisible(true);
+  }, [setEditingEmployee, setIsModalVisible]);
 
   const handleDelete = useCallback((record: Employee) => {
     console.log("Xóa:", record);
